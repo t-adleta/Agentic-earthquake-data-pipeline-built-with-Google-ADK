@@ -64,11 +64,15 @@ Then edit `.env`:
 If `BUCKET_NAME` is left empty the pipeline still runs and builds the report locally; the
 storage agent reports that uploads were skipped.
 
-**Model and free-tier limits.** `.env.example` sets `PIPELINE_MODEL=gemini-3.6-flash`,
-which responded reliably during testing (the default `gemini-3.8-flash` was timing out).
-The Gemini free tier allows about 5 requests per minute per model and a run makes about 8,
-so the agents automatically wait and retry on rate-limit (429) and overload (503/504)
-errors. Expect a full run to take a few minutes.
+**Model and free-tier limits.** `.env.example` sets `PIPELINE_MODEL=gemini-3.5-flash-lite`,
+which has the most free-tier headroom (the default `gemini-3.8-flash` was timing out during
+testing, and the larger flash models allow only about 20 requests per day on the free tier).
+A run makes about 8 model requests, and the agents automatically wait and retry on
+rate-limit (429) and overload (503/504) errors. If you see a "requests per day" quota error,
+switch `PIPELINE_MODEL` to another model or wait until the next day.
+
+**S3 with `aws login`.** If you sign in with `aws login` rather than access keys, boto3 needs
+the `crt` extra, which `requirements.txt` already includes (`boto3[crt]`).
 
 ## Run
 
