@@ -141,6 +141,9 @@ def build_report(insights: str, tool_context: ToolContext) -> dict:
     if config.BUCKET_NAME:
         try:
             result["report_uri"] = storage.upload_file(report_path, f"reports/{summary['run_id']}/report.html")
+            # Assign a new list (not append in place) so ADK records the state change.
+            tool_context.state["uploaded_uris"] = [*tool_context.state.get("uploaded_uris", []),
+                                                   result["report_uri"]]
         except Exception as exc:
             result["upload_warning"] = f"Report built locally but upload failed: {exc}"
     tool_context.state["report_path"] = result["report_path"]
